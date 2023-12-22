@@ -2,23 +2,27 @@ import pytest
 from allure_commons._allure import step
 from appium.options.android import UiAutomator2Options
 from appium.webdriver.common.appiumby import AppiumBy
+from dotenv import load_dotenv
 from selene import browser
 import os
 
-from selenium import webdriver
+
+@pytest.fixture(scope='session', autouse=True)
+def load_env():
+    load_dotenv()
 
 
 @pytest.fixture(scope='session', autouse=True)
 def mobile_management():
+    login = os.getenv('LOGIN')
+    password = os.getenv('PASSWORD')
+    app = os.getenv('APP')
     options = UiAutomator2Options().load_capabilities({
-        # Specify device and os_version for testing
-        # "platformName": "android",
         "platformVersion": "9.0",
         "deviceName": "Google Pixel 3",
 
         # Set URL of the application under test
-        # "app": "bs://sample.app",
-        "app": "bs://7461feb37c1602275e61c3409e0d68e27d822b1e",
+        "app": f"{app}",
         # Set other BrowserStack capabilities
         'bstack:options': {
             "projectName": "First Python project",
@@ -26,8 +30,8 @@ def mobile_management():
             "sessionName": "BStack first_test",
 
             # Set your access credentials
-            "userName": "polinavish_E9hyNj",
-            "accessKey": "wcmbBf4yzPWeyHV6qPby"
+            "userName": f"{login}",
+            "accessKey": f"{password}"
         }
     })
 
