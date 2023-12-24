@@ -8,6 +8,7 @@ from appium.options.android import UiAutomator2Options
 from appium import webdriver
 from appium.webdriver.common.appiumby import AppiumBy
 from dotenv import load_dotenv
+from requests.auth import HTTPBasicAuth
 from selene import browser, support
 import os
 
@@ -93,19 +94,19 @@ def mobile_management():
     with allure.step('tear down app session'):
         browser.quit()
 
-    bstack_session = requests.get(
-        f'https://api-cloud.browserstack.com/app-automate/sessions/{session_id}.json', auth=f'{login}, {password}',
+    bstack_session = requests.get(url=f'https://api-cloud.browserstack.com/app-automate/sessions/{session_id}.json',
+                                  auth=(login, password),
     ).json()
     print(bstack_session)
-    # video_url = bstack_session['automation_session']['video_url']
-    #
-    # allure.attach(
-    #     '<html><body>'
-    #     '<video width="100%" height="100%" controls autoplay>'
-    #     f'<source src="{video_url}" type="video/mp4">'
-    #     '</video>'
-    #     '</body></html>',
-    #     name='video recording',
-    #     attachment_type=allure.attachment_type.HTML,
-    # )
+    video_url = bstack_session['automation_session']['video_url']
+
+    allure.attach(
+        '<html><body>'
+        '<video width="100%" height="100%" controls autoplay>'
+        f'<source src="{video_url}" type="video/mp4">'
+        '</video>'
+        '</body></html>',
+        name='video recording',
+        attachment_type=allure.attachment_type.HTML,
+    )
 
