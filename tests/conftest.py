@@ -1,15 +1,15 @@
 import allure
 import pytest
-import requests
 from allure import step
 from allure_commons._allure import StepContext
 from appium.options.android import UiAutomator2Options
 from appium import webdriver
 from appium.webdriver.common.appiumby import AppiumBy
 from dotenv import load_dotenv
-from requests.auth import HTTPBasicAuth
 from selene import browser, support
 import os
+
+import utils.allure
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -56,37 +56,13 @@ def mobile_management():
         browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_skip_button")).click()
 
     yield
-
-    allure.attach(
-        browser.driver.get_screenshot_as_png(),
-        name='screenshot',
-        attachment_type=allure.attachment_type.PNG,
-    )
-
-    allure.attach(
-        browser.driver.page_source,
-        name='screen xml dump',
-        attachment_type=allure.attachment_type.XML,
-    )
+    utils.allure.screenshot()
+    utils.allure.page_source()
 
     session_id = browser.driver.session_id
 
     with allure.step('tear down app session'):
         browser.quit()
 
-    bstack_session = requests.get(url=f'https://api-cloud.browserstack.com/app-automate/sessions/{session_id}.json',
-                                  auth=(login, password),
-    ).json()
-
-    video_url = bstack_session['automation_session']['video_url']
-
-    allure.attach(
-        '<html><body>'
-        '<video width="100%" height="100%" controls autoplay>'
-        f'<source src="{video_url}" type="video/mp4">'
-        '</video>'
-        '</body></html>',
-        name='video recording',
-        attachment_type=allure.attachment_type.HTML,
-    )
+    utils.allure.video(login, password, session_id)
 

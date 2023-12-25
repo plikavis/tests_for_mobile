@@ -17,8 +17,9 @@ def test_search():
 
 
 def test_hide_news():
-    with step('Check title "Featured article"'):
-        browser.all((AppiumBy.ID, "org.wikipedia.alpha:id/view_card_header_title")).first.should(have.text('Featured article'))
+    with ((step('Check title "Featured article"'))):
+        browser.all((AppiumBy.ID, "org.wikipedia.alpha:id/view_card_header_title")
+                    ).first.should(have.text('Featured article'))
     with step('Open menu'):
         browser.all((AppiumBy.ID, "org.wikipedia.alpha:id/view_list_card_header_menu")).first.click()
     with step('Hide card'):
@@ -38,4 +39,3 @@ def test_open_article():
         browser.element((AppiumBy.CLASS_NAME, "android.webkit.WebView")).should(have.text('Selene'))
     with step('Go to back'):
         browser.element((AppiumBy.CLASS_NAME, 'android.widget.ImageButton')).click().click()
-
